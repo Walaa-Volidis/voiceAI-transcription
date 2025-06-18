@@ -7,7 +7,9 @@ from livekit.agents import (
     JobProcess,
     WorkerOptions,
     cli,
-    llm,
+    Agent,
+    AgentSession,
+    RunContext
 )
 from livekit.agents import llm
 from livekit.plugins import silero, groq
@@ -37,7 +39,7 @@ async def entrypoint(ctx: JobContext):
     participant = await ctx.wait_for_participant()
     logger.info(f"starting voice assistant for participant {participant.identity}")
 
-    agent = VoicePipelineAgent(
+    session = AgentSession(
         vad=ctx.proc.userdata["vad"],
         stt=groq.STT(model="whisper-large-v3"),
         llm=groq.LLM(model="llama-3.3-70b-versatile"),
@@ -48,10 +50,13 @@ async def entrypoint(ctx: JobContext):
         ),
     )
 
-    agent.start(ctx.room, participant)
 
+    await session.start(
+        agent=VoiceAgent(),
+        room=ctx.room
+    )  
     # The agent should be polite and greet the user when it joins :)
-    await agent.say("Hey, how can I help you today?", allow_interruptions=True)
+    await session.say("Hey, how can I help you today?", allow_interruptions=True)
 
 
 if __name__ == "__main__":
