@@ -25,9 +25,8 @@ class VoiceAgent(Agent):
                "You were created as a demo to showcase the capabilities of LiveKit's agents framework."
             )
         )
-    def prewarm(proc: JobProcess):
-      proc.userdata["vad"] = silero.VAD.load()
-
+def prewarm(proc: JobProcess):
+   proc.userdata["vad"] = silero.VAD.load()
 
 async def entrypoint(ctx: JobContext):
     logger.info(f"connecting to room {ctx.room.name}")
