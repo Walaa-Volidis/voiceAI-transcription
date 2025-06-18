@@ -9,7 +9,6 @@ from livekit.agents import (
     cli,
     Agent,
     AgentSession,
-    RunContext
 )
 from livekit.agents import llm
 from livekit.plugins import silero, groq
@@ -18,20 +17,19 @@ load_dotenv(dotenv_path=".env.local")
 logger = logging.getLogger("voice-agent")
 
 class VoiceAgent(Agent):
-   def prewarm(proc: JobProcess):
-    proc.userdata["vad"] = silero.VAD.load()
+    def __init__(self):
+        super().__init__(
+            instructions=(
+               "You are a voice assistant created by LiveKit. Your interface with users will be voice. "
+               "You should use short and concise responses, and avoiding usage of unpronouncable punctuation. "
+               "You were created as a demo to showcase the capabilities of LiveKit's agents framework."
+            )
+        )
+    def prewarm(proc: JobProcess):
+      proc.userdata["vad"] = silero.VAD.load()
 
 
 async def entrypoint(ctx: JobContext):
-    initial_ctx = llm.ChatContext().append(
-        role="system",
-        text=(
-            "You are a voice assistant created by LiveKit. Your interface with users will be voice. "
-            "You should use short and concise responses, and avoiding usage of unpronouncable punctuation. "
-            "You were created as a demo to showcase the capabilities of LiveKit's agents framework."
-        ),
-    )
-
     logger.info(f"connecting to room {ctx.room.name}")
     await ctx.connect(auto_subscribe=AutoSubscribe.AUDIO_ONLY)
 
