@@ -41,7 +41,6 @@ async def entrypoint(ctx: JobContext):
         vad=ctx.proc.userdata["vad"],
         stt=groq.STT(model="whisper-large-v3"),
         llm=groq.LLM(model="llama-3.3-70b-versatile"),
-        tts=elevenlabs.TTS(),
         tts=groq.TTS(
         model="playai-tts",
         voice="Arista-PlayAI",
